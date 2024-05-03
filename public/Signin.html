@@ -14,13 +14,13 @@
         <img src="LPUlogo.png" alt="" srcset="">
     </div>
     <div class="form">
-        <form onsubmit="return validate()" action="index.html">
+        <form onsubmit="validate(event)" action="main.html">
             <h1>Sign In...</h1>
             
             <label for="email">Email</label>
-            <input type="email" id="email" placeholder="@email">
+            <input type="email" id="signin-email" placeholder="@email">
             <label for="password">Password</label>
-            <input type="password" id="password" placeholder="password">
+            <input type="password" id="signin-password" placeholder="password">
             <input type="submit" class="subid" value="Submit">
         </form>
 

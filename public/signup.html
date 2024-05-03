@@ -14,17 +14,17 @@
         <img src="LPUlogo.png" alt="" srcset="">
     </div>
     <div class="form">
-        <form onsubmit="return validateform()" action="Signin.html">
+        <form onsubmit="validateform(event)" action="Signin.html">
             <h1>Sign Up...</h1>
             <label for="name">First Name</label>
-            <input type="text" id="name" placeholder="Name">
+            <input type="text" id="signup-name" name="username" placeholder="Name">
             <label for="email">Email</label>
-            <input type="email" id="email" placeholder="email@example.com">
+            <input type="email" id="signup-email" name="email" placeholder="email@example.com">
             <label for="password">Password</label>
-            <input type="password" id="password" placeholder="password">
+            <input type="password" id="signup-password" placeholder="password">
             <label for="confirmPassword">Confirm Password</label>
-            <input type="password" id="confirmPassword" placeholder="confirm password">
-            <input type="submit" class="subid" value="Submit">
+            <input type="password" id="signup-confirmPassword" placeholder="confirm password">
+            <input type="submit" class="subid" name="submit" value="Submit">
         </form>
         <p>By clicking the Sign Up button, you agree to our<br>
         <a href="#">Terms and Conditions</a> and <a href="#">Privacy Policy</a></p>

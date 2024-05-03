@@ -78,7 +78,7 @@ const opencreateModal=()=>{
     createModal.style.display='grid';
 }
 const closecreateModal=(e)=>{
-    if(e.target.classList.contains('create')) {
+    if(e.target.classList.contains('create-post')) {
         createModal.style.display = 'none';
     }
 }
@@ -190,4 +190,163 @@ Bg3.addEventListener('click', () => {
     Bg1.classList.remove('active');
     Bg2.classList.remove('active');
     changeBG();
+});
+
+function createPost() {
+    const description = document.getElementById('desc').value;
+    const image = document.getElementById('testImage').files[0];
+
+    const formData = new FormData();
+    formData.append('description', description);
+    formData.append('image', image);
+
+    fetch('/createpost', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+            createModal.style.display = 'none';
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Post created:', data);
+        fetchFeeds()
+        .then(() => {
+            var feeds = localStorage.getItem('feeds');
+            dynamicFeeds(JSON.parse(feeds));
+        });
+        createModal.style.display = 'none';
+        // Do something with the response data if needed
+    })
+    .catch(error => {
+        console.error('There has been a problem with your fetch operation:', error);
+        createModal.style.display = 'none';
+    });
+}
+
+async function fetchFeeds() {
+    await fetch('/feeds')
+    .then(response => {
+        if (!response.ok) {
+        throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(feeds => {
+        console.log('Feeds:', feeds);
+        // Store the fetched feeds in localStorage
+        localStorage.setItem('feeds', JSON.stringify(feeds));
+        // Handle the fetched feeds here
+    })
+    .catch(error => {
+        console.error('There has been a problem with your fetch operation:', error);
+    });
+}
+
+function dynamicFeeds(feeds) {
+    var feedsContainer = document.querySelector('.feeds');
+
+    feeds.forEach(feed => {
+        // Create feed element
+        var feedElement = document.createElement('div');
+        feedElement.classList.add('feed');
+
+        // Create head element
+        var headElement = document.createElement('div');
+        headElement.classList.add('head');
+
+        // Create user element
+        var userElement = document.createElement('div');
+        userElement.classList.add('user');
+
+        // Create profile photo element
+        var profilePhotoElement = document.createElement('div');
+        profilePhotoElement.classList.add('profile-photo');
+        var profilePhotoImg = document.createElement('img');
+        profilePhotoImg.src = "profile.jpg"
+        profilePhotoElement.appendChild(profilePhotoImg);
+        userElement.appendChild(profilePhotoElement);
+
+        // Create info element
+        var infoElement = document.createElement('div');
+        infoElement.classList.add('info');
+        var usernameElement = document.createElement('h3');
+        usernameElement.textContent = feed.username;
+        infoElement.appendChild(usernameElement);
+        userElement.appendChild(infoElement);
+
+        // Append user element to head element
+        headElement.appendChild(userElement);
+
+        // Create edit element
+        var editElement = document.createElement('span');
+        editElement.classList.add('edit');
+        var editIcon = document.createElement('i');
+        editIcon.classList.add('uil', 'uil-ellipsis-h');
+        editElement.appendChild(editIcon);
+        headElement.appendChild(editElement);
+
+        // Append head element to feed element
+        feedElement.appendChild(headElement);
+        // Decode base64 data
+        var imageData = "http://localhost:3000/uploads/" + feed.imageName;
+
+        // Create photo element
+        var photoElement = document.createElement('div');
+        photoElement.classList.add('photo');
+        var photoImg = document.createElement('img');
+        photoImg.src = imageData;
+        photoElement.appendChild(photoImg);
+        feedElement.appendChild(photoElement);
+
+
+        // Create action buttons element
+        var actionButtonsElement = document.createElement('div');
+        actionButtonsElement.classList.add('action-buttons');
+        var interactionButtonsElement = document.createElement('div');
+        interactionButtonsElement.classList.add('interaction-buttons');
+        var heartIcon = document.createElement('span');
+        heartIcon.innerHTML = '<i class="uil uil-heart"></i>';
+        interactionButtonsElement.appendChild(heartIcon);
+        var commentIcon = document.createElement('span');
+        commentIcon.innerHTML = '<i class="uil uil-comment-dots"></i>';
+        interactionButtonsElement.appendChild(commentIcon);
+        var shareIcon = document.createElement('span');
+        shareIcon.innerHTML = '<i class="uil uil-share-alt"></i>';
+        interactionButtonsElement.appendChild(shareIcon);
+        actionButtonsElement.appendChild(interactionButtonsElement);
+        feedElement.appendChild(actionButtonsElement);
+
+        // Create liked by element
+        var likedByElement = document.createElement('div');
+        likedByElement.classList.add('liked-by');
+        likedByElement.innerHTML = `<p>Liked by <b>${feed.username}</b> and <b>${feed.likedBy.length} others</b></p>`;
+        feedElement.appendChild(likedByElement);
+
+        // Create caption element
+        var captionElement = document.createElement('div');
+        captionElement.classList.add('caption');
+        var captionP = document.createElement('p');
+        captionP.textContent = feed.description;
+        captionElement.appendChild(captionP);
+        feedElement.appendChild(captionElement);
+
+        // Create comments element
+        var commentsElement = document.createElement('div');
+        commentsElement.classList.add('comments', 'text-muted');
+        commentsElement.textContent = 'View all comments';
+        feedElement.appendChild(commentsElement);
+
+        // Append feed element to feeds container
+        feedsContainer.appendChild(feedElement);
+    });
+}
+
+fetchFeeds()
+.then(() => {
+    var feeds = localStorage.getItem('feeds');
+    dynamicFeeds(JSON.parse(feeds));
 });
